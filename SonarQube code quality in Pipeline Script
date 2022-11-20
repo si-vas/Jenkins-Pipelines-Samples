@@ -1,3 +1,7 @@
+# Create new project manually and add name to that and generate token and choose build tool option, 
+# It will generate code to build maven and publish to SonarQube
+# In Jenkins add plugin with Sonarqube Scanner plugin
+
 #Below script pulling code from github and pushing to SonarQube for quality analysis and maven build only if quality gate pass else fail the job
 
 pipeline {
