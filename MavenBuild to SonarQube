@@ -3,6 +3,8 @@
 # In Jenkins add plugin with Sonarqube Scanner plugin
 # Configure SonarQube ip with token in Configure system in Jenkins
 # If building Maven Project, just paste github repo and paste the snippet without “\”
+# below to Goals and options paste without mvn
+
 
 mvn clean verify sonar:sonar \
   -Dsonar.projectKey=Siva \
