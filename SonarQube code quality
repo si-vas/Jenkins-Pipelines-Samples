@@ -1,0 +1,31 @@
+#Below script pulling code from github and pushing to SonarQube for quality analysis and maven build only if quality gate pass else fail the job
+
+pipeline {
+    agent any
+    environment {
+    PATH = "$PATH:/opt/maven/bin"
+    }
+    stages{
+       stage('GetCode'){
+            steps{
+                git 'https://github.com/yankils/hello-world.git'
+              }
+            }
+        stage('SonarQube Check'){
+            steps{
+            script{
+                withSonarQubeEnv('sonarqube-9.7') { 
+                 sh "mvn sonar:sonar"
+                    }
+                 timeout(time: 1, unit: 'HOURS') {
+                 def qg = waitForQualityGate()
+                 if (qg.status != 'OK') {
+                 error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    }
+                   }
+		         sh "mvn clean install"
+                  }
+                }
+    }
+    }
+}
