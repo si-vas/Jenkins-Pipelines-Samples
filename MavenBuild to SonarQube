@@ -1,6 +1,7 @@
 # Create new project manually and add name to that and generate token and choose build tool option, 
 # It will generate code to build maven and publish to SonarQube
 # In Jenkins add plugin with Sonarqube Scanner plugin
+# Configure SonarQube ip with token in Configure system in Jenkins
 # If building Maven Project, just paste github repo and paste the snippet without “\”
 
 mvn clean verify sonar:sonar \
