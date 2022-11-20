@@ -5,6 +5,7 @@
 # Configure webhook in SonarQube to respond the status
 # go to Administration -> configuration -> webhooks -> create
 # provide jenkins url and sonarqube-webhook after ip eg	http://65.2.30.93:8080/sonarqube-webhook/
+# also make sure to use different token for different project
 
 #Below script pulling code from github and pushing to SonarQube for quality analysis and maven build only if quality gate pass else fail the job
 
