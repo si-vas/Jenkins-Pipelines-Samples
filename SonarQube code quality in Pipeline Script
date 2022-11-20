@@ -1,6 +1,10 @@
 # Create new project manually and add name to that and generate token and choose build tool option, 
 # It will generate code to build maven and publish to SonarQube
 # In Jenkins add plugin with Sonarqube Scanner plugin
+# provide SonarQube servers ip with tokens for auhentication in Configure System
+# Configure webhook in SonarQube to respond the status
+# go to Administration -> configuration -> webhooks -> create
+# provide jenkins url and sonarqube-webhook after ip eg	http://65.2.30.93:8080/sonarqube-webhook/
 
 #Below script pulling code from github and pushing to SonarQube for quality analysis and maven build only if quality gate pass else fail the job
 
