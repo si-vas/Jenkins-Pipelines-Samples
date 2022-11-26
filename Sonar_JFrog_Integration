@@ -1,0 +1,79 @@
+pipeline {
+    agent any
+     tools {
+      maven 'maven'
+      }
+     stages{
+       stage('GetCode'){
+            steps{
+                git 'https://github.com/si-vas/onlinebookstore.git'
+              }
+            }
+         stage('SonarQube Check'){
+            steps{
+            script{
+                withSonarQubeEnv('sonarqube-9.7') { 
+                 sh "mvn clean verify sonar:sonar -e"
+                    }
+                 timeout(time: 1, unit: 'HOURS') {
+                 def qg = waitForQualityGate()
+                 if (qg.status != 'OK') {
+                 error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    }
+                   }
+                  }
+                }
+          }
+         stage ('Artifactory configuration') {
+            steps {
+                rtServer (
+                    id: "JFrog-Cloud",
+                    url: "https://fragomen.jfrog.io/artifactory",
+                    credentialsId: "JFrog"
+                )
+
+                rtMavenDeployer (
+                    id: "MAVEN_DEPLOYER",
+                    serverId: "JFrog-Cloud",
+                    releaseRepo: "libs-release-local",
+                    snapshotRepo: "libs-snapshot-local",
+                    properties: ['key1=value1', 'key2=value2']
+                )
+
+                rtMavenResolver (
+                    id: "MAVEN_RESOLVER",
+                    serverId: "JFrog-Cloud",
+                    releaseRepo: "libs-release",
+                    snapshotRepo: "libs-snapshot"
+                )
+            }
+          }
+         stage ('Deploy Artifacts') {
+            steps {
+                rtMavenRun (
+                    tool: "maven", // Tool name from Jenkins configuration
+                    pom: 'pom.xml',
+                    goals: 'clean install',
+                    deployerId: "MAVEN_DEPLOYER",
+                    resolverId: "MAVEN_RESOLVER"
+                )
+          }
+        }
+        stage ('Publish build info') {
+            steps {
+                rtPublishBuildInfo (
+                    serverId: "JFrog-Cloud"
+             )
+        }
+     }
+        stage ('Scan Build') {
+            steps {
+              xrayScan (
+                serverId: 'JFrog-Cloud',
+                buildName: 'TestJob01',
+                failBuild: false
+              )
+            }
+    }
+}
+}
